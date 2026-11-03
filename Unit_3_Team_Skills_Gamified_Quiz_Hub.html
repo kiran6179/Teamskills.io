@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Skills | Gamified Learning Hub</title>
+<style>
+:root{--navy:#15345b;--blue:#245da8;--sky:#eaf3ff;--gold:#f2b544;--ink:#182536;--muted:#65758b;--green:#18845b;--red:#bd3f4b;--paper:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+header{background:linear-gradient(120deg,#102b50,#2867ad);color:white;padding:28px 18px 24px}
+.wrap{max-width:980px;margin:auto;padding:0 16px}header h1{margin:0;font-size:clamp(25px,4vw,38px)}header p{margin:7px 0 0;color:#e6efff}
+.pill{display:inline-block;background:#ffffff20;border:1px solid #ffffff55;border-radius:30px;padding:5px 11px;font-size:12px;margin-bottom:10px}
+main{padding:22px 0 50px}.intro{background:white;border-radius:16px;padding:18px 20px;box-shadow:0 4px 18px #1a365510;margin-bottom:18px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:16px 0}
+.mode{border:1px solid #d9e2ef;background:white;border-radius:13px;padding:13px;text-align:left;cursor:pointer;color:var(--ink);font-weight:700}
+.mode small{display:block;color:var(--muted);font-weight:400;margin-top:4px}.mode.active{border:2px solid var(--blue);background:var(--sky)}
+.panel{background:white;border-radius:16px;padding:20px;box-shadow:0 4px 18px #1a365510;min-height:330px}
+.topline{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+.progress{height:8px;background:#e8edf4;border-radius:9px;overflow:hidden;margin:12px 0 20px}.progress span{display:block;height:100%;background:var(--gold);width:0;transition:width .2s}
+h2{color:var(--navy);margin:8px 0 12px}h3{margin:8px 0}.question{font-size:19px;font-weight:700;margin:18px 0}
+.options{display:grid;gap:9px}.option,.matchitem,.sequenceitem{width:100%;border:1px solid #d7e0eb;border-radius:10px;padding:12px 14px;background:white;text-align:left;cursor:pointer;color:var(--ink);font-size:15px}
+.option:hover,.matchitem:hover,.sequenceitem:hover{border-color:var(--blue);background:#f4f8ff}
+.option.correct{border-color:var(--green);background:#eaf8f1}.option.wrong{border-color:var(--red);background:#fff0f1}
+.feedback{padding:12px;border-radius:10px;margin:13px 0;background:#f1f5fa}.feedback.good{background:#eaf8f1;color:#126344}.feedback.bad{background:#fff0f1;color:#9b2935}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+button.primary,button.secondary{border:0;border-radius:9px;padding:11px 17px;font-weight:700;cursor:pointer}
+.primary{background:var(--blue);color:white}.secondary{background:#e9eff7;color:var(--navy)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.badge{background:#fff5dd;color:#805400;border-radius:20px;padding:5px 10px;font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.matchcol{display:grid;gap:8px}
+.matchitem.selected{outline:2px solid var(--blue);background:var(--sky)}.matchitem.matched{background:#eaf8f1;border-color:var(--green);cursor:default}
+.sequenceitem{display:flex;align-items:center;gap:10px}.num{background:var(--sky);color:var(--blue);border-radius:50%;width:26px;height:26px;display:inline-grid;place-items:center;font-weight:bold;flex:none}
+.scenario{background:#f2f6fb;border-left:4px solid var(--gold);padding:13px 15px;border-radius:8px;margin:12px 0}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}.panel{padding:16px}.question{font-size:17px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><span class="pill">STUDENT LEARNING • UNIT 3</span><h1>TEAM SKILLS</h1><p>Play, practise and check your understanding — one challenge at a time.</p></div></header>
+<main class="wrap">
+<section class="intro">
+<strong>How to play</strong>
+<p style="margin:5px 0 8px">Choose a challenge below. Read the feedback after every answer; the aim is to understand the concept, not just collect points. Your score is shown on this device and is not submitted to your teacher.</p>
+<div><span class="badge">5 game formats</span> &nbsp; <span class="badge">Instant feedback</span> &nbsp; <span class="badge">Self-paced</span></div>
+</section>
+<nav class="modes" id="modes">
+<button class="mode active" data-mode="quick">⚡ Quick-fire quiz<small>Multiple choice • 10 questions</small></button>
+<button class="mode" data-mode="scenario">🏨 Hospitality scenarios<small>Apply teamwork concepts</small></button>
+<button class="mode" data-mode="match">🧩 Match the concept<small>Pair terms with meanings</small></button>
+<button class="mode" data-mode="sequence">🔢 Put it in order<small>Sequence group development</small></button>
+<button class="mode" data-mode="leader">🌟 Leadership challenge<small>Identify the right habit</small></button>
+</nav>
+<section class="panel" id="game" aria-live="polite"></section>
+</main>
+<footer>Unit 3: Team Skills • Learning activity based on the supplied Employability Skills chapter.</footer>
+<script>
+const quick = [
+["What is the main purpose of team building?","To work collectively towards a common goal",["To compete with every colleague","To remove all organisational rules","To make one person responsible"],"Team building brings people together to accomplish a common goal."],
+["Which structure groups people by similar tasks or specialisation?","Functional structure",["Divisional structure","Matrix structure","Flat structure"],"A functional structure groups people according to their area of expertise or specialisation."],
+["An employee reports to a functional manager and a project manager. Which structure is this?","Matrix structure",["Flat structure","Functional structure","Divisional structure"],"A matrix structure combines functional and divisional arrangements and can involve more than one reporting line."],
+["Which is an approach to team building?","Clarity of roles",["Avoiding feedback","Individual competition only","Keeping goals undefined"],"Clarity of roles reduces confusion about duties and responsibilities."],
+["Which is a recognised challenge in team building?","Unclear communication and roles",["Shared goals","Mutual support","Role clarity"],"Communication and role ambiguity can obstruct team performance."],
+["Which leadership habit means deciding what matters most and prioritising it?","Put First Things First",["Think Win-Win","Synergize","Sharpen the Saw"],"This habit focuses on prioritising what is important over what is merely urgent."],
+["Which statement best describes a work team in the chapter?","A structured group working towards definite goals through coordinated interaction",["People who happen to be in the same place","A group with no shared purpose","Individuals working without coordination"],"Work teams have specific goals and coordinated interactions."],
+["Which stage follows storming in group development?","Norming",["Forming","Performing","Adjourning"],"The sequence is Forming, Storming, Norming, Performing and Adjourning."],
+["Which is a maintenance function in group dynamics?","Encouraging",["Information seeking","Bringing closure","Consensus testing"],"Maintenance functions support the social-emotional environment; encouraging is one example."],
+["What does 'Synergize' mean?","Combine people's strengths through positive teamwork",["Work independently at all times","Prioritise urgent tasks only","Avoid different viewpoints"],"Synergy combines strengths to achieve what individuals could not achieve alone."]
+];
+const scenarios = [
+{q:"A hotel is hosting a wedding and a corporate conference at the same time. Separate teams are organised for each event, each with its own specialised staff. Which structure does this resemble?",a:["Divisional structure","Functional structure","Flat structure","Matrix structure"],c:0,e:"Divisional structures group people by the product or service provided. The chapter gives separate event teams as an example."},
+{q:"During a group assignment, two students disagree about who should prepare the presentation. The team discusses duties and assigns clear responsibilities. Which team-building approach is being used?",a:["Clarity of roles","Goal setting","Interpersonal relationships","Problem solving"],c:0,e:"Clarifying duties and responsibilities reduces confusion and makes individual contributions visible."},
+{q:"A new student team meets, gets to know one another and learns about the task. Which stage are they in?",a:["Forming","Storming","Norming","Performing"],c:0,e:"Forming is the first stage, when members become familiar with teammates and the task."},
+{q:"A restaurant team has disagreements about the work method. Members discuss the conflict, agree on shared rules and begin working cohesively. Which stage is this?",a:["Norming","Forming","Performing","Adjourning"],c:0,e:"Norming involves resolving confrontations, developing agreements and strengthening cohesion."},
+{q:"A banquet supervisor listens carefully to a team member's concern before explaining the department's decision. Which habit is demonstrated?",a:["Seek First to Understand, then to Be Understood","Begin with the End in Mind","Sharpen the Saw","Put First Things First"],c:0,e:"The habit involves empathetic listening to genuinely understand another person."},
+{q:"Housekeeping, front office and maintenance staff work together to resolve repeated room-readiness delays. What kind of team is this?",a:["Cross-functional team","Functional team","Self-interest group","Production team"],c:0,e:"A cross-functional team brings members from different areas together for a common assignment or project."},
+{q:"One member repeatedly interrupts others and pushes personal ideas at the expense of the group's task. Which group function does this illustrate?",a:["Self-interest function","Maintenance function","Task function","Consensus testing"],c:0,e:"Self-interest behaviour affects task achievement at the expense of the group."},
+{q:"A team agrees to complete a guest-feedback improvement project by 30 November, with a measurable reduction in complaints. Which goal-setting principle is most clearly reflected by the deadline?",a:["Time-bound","Relevant","Achievable","Specific"],c:0,e:"Time-bound goals include a defined timeframe for achievement."}
+];
+const leaders = [
+["A team member notices a guest queue building up and takes initiative to help before being asked.","Be Proactive","Taking responsibility and initiating a positive response."],
+["A student team defines the final event outcome before dividing the work.","Begin with the End in Mind","Envisioning the desired future result and planning towards it."],
+["A team completes urgent routine tasks but reserves time for the important event rehearsal.","Put First Things First","Prioritising what is important."],
+["Two departments agree on a solution that benefits both rather than allowing one department to lose.","Think Win-Win","Seeking mutually beneficial agreements."],
+["A supervisor listens to a colleague's explanation before giving a response.","Seek First to Understand, then to Be Understood","Using empathetic listening to understand first."],
+["Front office, housekeeping and maintenance combine their strengths to solve a room-readiness issue.","Synergize","Combining people's strengths through positive teamwork."],
+["A student balances practice, rest and learning to sustain performance.","Sharpen the Saw","Renewing resources, energy and health for long-term effectiveness."]
+];
+let mode="quick", index=0, score=0, answered=false, selected=null, matched=0, matchLeft=null, order=[];
+const game=document.getElementById("game");
+const shuffle=a=>[...a].sort(()=>Math.random()-.5);
+function setMode(m){mode=m;index=0;score=0;answered=false;selected=null;matched=0;matchLeft=null;pairs.forEach(p=>p.done=false);document.querySelectorAll(".mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===m));render();}
+document.querySelectorAll(".mode").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+function top(title,total,step){return `<div class="topline"><span>${title}</span><span>Score: <b>${score}</b></span></div><div class="progress"><span style="width:${Math.min(100,step/total*100)}%"></span></div>`}
+function finish(total){game.innerHTML=`<div class="topline"><span>CHALLENGE COMPLETE</span><span class="badge">🏆 ${score} points</span></div><h2>Well played!</h2><p>You completed the activity and scored <b>${score}</b> point${score===1?"":"s"}.</p><p>${score>=total*.8?"Excellent understanding. Try explaining the concepts in your own words.":score>=total*.5?"Good effort. Review the explanations and try again to strengthen your understanding.":"Keep practising. Revisit the unit and attempt the challenge again."}</p><div class="actions"><button class="primary" onclick="restart()">Play again</button></div>`}
+function restart(){setMode(mode)}
+function render(){
+ if(mode==="quick") renderQuiz(quick,"⚡ Quick-fire quiz");
+ if(mode==="scenario") renderQuiz(scenarios,"🏨 Hospitality scenarios");
+ if(mode==="leader") renderLeader();
+ if(mode==="match") renderMatch();
+ if(mode==="sequence") renderSequence();
+}
+function renderQuiz(data,title){
+ if(index>=data.length){finish(data.length);return}
+ const q=data[index];let opts=q[2]||q.a;let correct=q[1]||opts[q.c]; 
+ game.innerHTML=top(title,data.length,index)+`<div class="topline"><span>QUESTION ${index+1} OF ${data.length}</span><span>+1 point for each correct answer</span></div><div class="question">${q[0]}</div><div class="options">${opts.map((o,i)=>`<button class="option" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div><div id="feedback"></div><div class="actions"><button class="primary" id="next" disabled>${index===data.length-1?"See results":"Next question →"}</button></div>`;
+ document.querySelectorAll(".option").forEach(b=>b.onclick=()=>{
+  if(answered)return;answered=true;const i=+b.dataset.i;const ok= mode==="quick"?q[2][i]===q[1]:i===q.c;if(ok)score++;
+  document.querySelectorAll(".option").forEach(x=>{x.disabled=true;const j=+x.dataset.i;if((mode==="quick"&&q[2][j]===q[1])||(mode!=="quick"&&j===q.c))x.classList.add("correct")});
+  if(!ok)b.classList.add("wrong");document.getElementById("feedback").innerHTML=`<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct!":"Not quite."}</b> ${mode==="quick"?q[3]:q.e}</div>`;
+  document.getElementById("next").disabled=false;document.querySelector(".topline b").textContent=score;
+ });
+ document.getElementById("next").onclick=()=>{index++;answered=false;render()};
+}
+function renderLeader(){
+ if(index>=leaders.length){finish(leaders.length);return}
+ const item=leaders[index];const opts=shuffle(leaders.map(x=>x[1]));
+ game.innerHTML=top("🌟 Leadership challenge",leaders.length,index)+`<div class="topline"><span>CHALLENGE ${index+1} OF ${leaders.length}</span></div><div class="scenario">${item[0]}</div><div class="question">Which of Stephen Covey's seven habits is demonstrated?</div><div class="options">${opts.map((o,i)=>`<button class="option" data-i="${i}">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div><div id="feedback"></div><div class="actions"><button class="primary" id="next" disabled>Next challenge →</button></div>`;
+ document.querySelectorAll(".option").forEach(b=>b.onclick=()=>{if(answered)return;answered=true;let ok=opts[+b.dataset.i]===item[1];if(ok)score++;document.querySelectorAll(".option").forEach(x=>{x.disabled=true;if(x.textContent.includes(item[1]))x.classList.add("correct")});if(!ok)b.classList.add("wrong");document.getElementById("feedback").innerHTML=`<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Correct!":"Review this habit."}</b> ${item[2]}</div>`;document.getElementById("next").disabled=false;document.querySelector(".topline b").textContent=score});
+ document.getElementById("next").onclick=()=>{index++;answered=false;render()};
+}
+const pairs=[["Functional structure","Groups people by similar tasks or specialisation"],["Divisional structure","Groups people by the product or service they provide"],["Matrix structure","Combines functional and divisional structures"],["Flat structure","Decentralises management and reduces hierarchy"],["Task functions","Initiating, seeking information and clarifying ideas"],["Maintenance functions","Encouraging, harmonising and improving group atmosphere"],["Cross-functional team","Members from different functional areas"],["Peer review","Team members evaluate one another's contributions"]];
+function renderMatch(){
+ if(matched===pairs.length){finish(pairs.length);return}
+ let left=shuffle(pairs.map((p,i)=>({v:p[0],i})));let right=shuffle(pairs.map((p,i)=>({v:p[1],i})));
+ game.innerHTML=top("🧩 Match the concept",pairs.length,matched)+`<div class="topline"><span>Choose one term, then choose its matching meaning.</span><span>${matched}/${pairs.length} matched</span></div><div class="grid2"><div class="matchcol"><h3>Terms</h3>${left.map(x=>`<button class="matchitem ${x.i<0?"":""}" data-side="l" data-id="${x.i}" ${pairs[x.i].done?"disabled":""}>${x.v}</button>`).join("")}</div><div class="matchcol"><h3>Meanings</h3>${right.map(x=>`<button class="matchitem" data-side="r" data-id="${x.i}" ${pairs[x.i].done?"disabled":""}>${x.v}</button>`).join("")}</div></div><div id="feedback"></div><div class="actions"><button class="secondary" onclick="setMode('match')">Restart matching</button></div>`;
+ document.querySelectorAll(".matchitem").forEach(b=>b.onclick=()=>{if(b.disabled)return;if(!matchLeft){matchLeft=+b.dataset.id;b.classList.add("selected");return}let id=+b.dataset.id;let isLeft=b.dataset.side==="l";let first=matchLeft;let correct=id===first&&((isLeft&&b.dataset.side==="l")||(!isLeft&&b.dataset.side==="r"));if(isLeft){matchLeft=id;document.querySelectorAll('[data-side="l"]').forEach(x=>x.classList.toggle("selected",+x.dataset.id===id));return}if(id===first){score++;matched++;pairs[id].done=true;document.getElementById("feedback").innerHTML='<div class="feedback good">Correct match! Keep going.</div>';matchLeft=null;renderMatch()}else{score=Math.max(0,score);document.getElementById("feedback").innerHTML='<div class="feedback bad">Not a match yet. Try another meaning.</div>';matchLeft=null;document.querySelectorAll(".selected").forEach(x=>x.classList.remove("selected"))}});
+}
+const stages=["Forming","Storming","Norming","Performing","Adjourning"];
+function renderSequence(){
+ if(index===1){finish(5);return}
+ order=shuffle(stages);game.innerHTML=top("🔢 Put it in order",5,0)+`<div class="topline"><span>Arrange the five stages of group development in the correct sequence.</span><span>Tap items in order</span></div><div class="question">What comes first, next and last?</div><div id="sequence" class="options">${order.map((x,i)=>`<button class="sequenceitem" data-val="${x}"><span class="num">${i+1}</span>${x}</button>`).join("")}</div><div id="feedback"></div><div class="actions"><button class="primary" id="check">Check sequence</button><button class="secondary" onclick="renderSequence()">Shuffle again</button></div>`;
+ let chosen=[];document.querySelectorAll(".sequenceitem").forEach(b=>b.onclick=()=>{if(chosen.includes(b.dataset.val))return;chosen.push(b.dataset.val);b.style.opacity=".5";b.querySelector(".num").textContent=chosen.length});
+ document.getElementById("check").onclick=()=>{let ok=chosen.length===5&&chosen.every((v,i)=>v===stages[i]);if(ok)score=5;document.getElementById("feedback").innerHTML=`<div class="feedback ${ok?"good":"bad"}"><b>${ok?"Perfect sequence!":"Correct sequence:"}</b> ${stages.join(" → ")}. ${ok?"You have earned 5 points.":"Review the order and try again."}</div>`;if(ok){document.getElementById("check").disabled=true;document.getElementById("check").textContent="Completed";document.querySelector(".topline b").textContent=score}else{document.getElementById("check").textContent="Try again";document.getElementById("check").onclick=()=>renderSequence()}};
+}
+render();
+</script>
+</body>
+</html>
